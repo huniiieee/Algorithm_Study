@@ -1,0 +1,135 @@
+문제:
+NxN 크기의 미로에서 출발지 목적지가 주어진다.
+
+이때 최소 몇 개의 칸을 지나면 출발지에서 도착지에 다다를 수 있는지 알아내는 프로그램을 작성하시오.
+
+경로가 있는 경우 출발에서 도착까지 가는데 지나야 하는 최소한의 칸 수를, 경로가 없는 경우 0을 출력한다.
+
+다음은 5x5 미로의 예이다. 1은 벽, 0은 통로를 나타내며 미로 밖으로 벗어나서는 안된다.
+
+13101
+10101
+10101
+10101
+10021
+
+마지막 줄의 2에서 출발해서 0인 통로를 따라 이동하면 맨 윗줄의 3에 5개의 칸을 지나 도착할 수 있다.
+
+
+[입력]
+
+첫 줄에 테스트 케이스 개수 T가 주어진다.  1<=T<=50
+
+다음 줄부터 테스트 케이스의 별로 미로의 크기 N과 N개의 줄에 걸쳐 미로의 통로와 벽에 대한 정보가 주어진다. 5<=N<=100
+
+0은 통로, 1은 벽, 2는 출발, 3은 도착이다.
+
+[출력]
+
+각 줄마다 "#T" (T는 테스트 케이스 번호)를 출력한 뒤, 답을 출력한다.
+
+답안:
+package Chapter2;
+
+// don't place package name. 
+
+import java.io.*;
+
+import java.util.*; 
+
+// don't change 'Main' class name and  'public' accessor. 
+
+public class Main {
+	
+	static int[] dx= {-1,0,1,0};
+	static int[] dy= {0,-1,0,1};
+	static class Node{
+		int x,y;
+		Node(int x,int y)
+		{
+			this.x=x;
+			this.y=y;
+		}
+	}
+	
+	
+	static void bfs(int [][]map,int x,int y,int [][]cnt)
+	{
+		int n=map.length;
+		
+		Queue<Node> q=new LinkedList<>();
+		q.offer(new Node(x,y));
+		
+		
+		while(!q.isEmpty())
+		{
+			Node cur=q.poll();
+				
+			for(int i=0;i<4;i++)
+			{
+				int nx=cur.x+dx[i];
+				int ny=cur.y+dy[i];
+				if(nx>=0&&nx<n&&ny>=0&&ny<n&&map[nx][ny]!=1)
+				{
+					map[nx][ny]=1;
+					cnt[nx][ny]=cnt[cur.x][cur.y]+1;
+					q.offer(new Node(nx,ny));
+				}
+			}
+			
+		}
+		
+	}
+    public static void main(String[] args) throws IOException { 
+
+        Scanner scanner = new Scanner(System.in); 
+        
+        int miroNum=scanner.nextInt();
+        int []result=new int[miroNum];
+        
+        int sx=0;
+        int sy=0;
+        
+        int ex=0;
+        int ey=0;
+        
+        for(int n=0;n<miroNum;n++)
+        {
+        	int miroLen=scanner.nextInt();
+        	int[][]miro=new int[miroLen][miroLen];
+        	int[][]cnt=new int[miroLen][miroLen];
+        	scanner.nextLine();
+        	for(int i=0;i<miroLen;i++)
+            {
+        		String temp=scanner.nextLine();
+            	for(int j=0;j<miroLen;j++)
+            	{
+            		miro[i][j]=Character.getNumericValue(temp.charAt(j));
+            		if(miro[i][j]==2)
+            		{
+            			sx=i;
+            			sy=j;
+            		}
+            		if(miro[i][j]==3)
+            		{
+            			ex=i;
+            			ey=j;
+            		}
+            	}
+            }
+        	bfs(miro,sx,sy,cnt);
+        	if(cnt[ex][ey]!=0)
+        		result[n]=cnt[ex][ey]-1;
+        	else
+        		result[n]=0;
+        }
+        
+        
+        for(int i=0;i<miroNum;i++)
+        {
+        	System.out.println("#"+(i+1)+" "+(result[i]));
+        }
+        
+
+    }
+}
